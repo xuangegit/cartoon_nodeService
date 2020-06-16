@@ -2,7 +2,7 @@ var express = require('express');
 var fs = require('fs')
 var router = express.Router();
 var multer = require('multer')
-var uploadFolder ='republic/uploads'
+var uploadFolder ='public/uploads'
 var createFolder = function(folder){
     try{
         fs.accessSync(folder); 
@@ -26,7 +26,7 @@ var storage = multer.diskStorage({
 
 // 通过 storage 选项来对 上传行为 进行定制化
 var upload = multer({ storage: storage })
-// var upload = multer({dest:'republic/uploads'})
+// var upload = multer({dest:'public/uploads'})
 var user = require('../controller/user')
 router.get('/login',user.getUser)
 router.get('/regist',user.addUser);

@@ -30,22 +30,32 @@ var getUser = (req,res)=>{
 }
 var addUser = (req,res)=>{
     console.log('registParams',req.query)
-   
-    mysql.pool.getConnection(function(err,connenct){
-        if(err) 
-            throw err
-        else {
-            connenct.query('INSERT INTO user SET ?',{...req.query},function(error,result){
-                if(error) 
-                    throw error
-                else {
-                    console.log('数据插入成功',console.log(result))
-                    res.json({code: 1,msg: '注册成功'})
-                    connenct.release() //释放数据库
-                }    
-            })
-        }    
+    var sqlStr = `CREATE TABLE IF NOT EXISTS user(
+        id int(11) NOT NULL AUTO_INCREMENT,
+        userName varchar(100) DEFAULT NULL,
+        phone varchar(100) DEFAULT NULL,
+        password varchar(255) DEFAULT NULL,
+        PRIMARY KEY (id)
+      ) `
+    mysql.queryPromise(sqlStr).then(d=>{
+        console.log('user表创建成功',d)
+        mysql.pool.getConnection(function(err,connenct){
+            if(err) 
+                throw err
+            else {
+                connenct.query('INSERT INTO user SET ?',{...req.query},function(error,result){
+                    if(error) 
+                        throw error
+                    else {
+                        console.log('数据插入成功',console.log(result))
+                        res.json({code: 1,msg: '注册成功'})
+                        connenct.release() //释放数据库
+                    }    
+                })
+            }    
+        })
     })
+    
 }
 var upload = (req,res)=>{
     console.log('req.file',req.file)
@@ -59,7 +69,7 @@ var upload = (req,res)=>{
 }
 var getList = (req,res)=>{
     console.log('list--Params',req.query)
-    mysql.queryPromise('select * from cartoonList').then(d=>{
+    mysql.queryPromise('select * from information_schema.TABLES  where TABLE_NAME = "cartoonList" ').then(d=>{
         console.log('列表数据',d)
         res.json({
             code: 1,

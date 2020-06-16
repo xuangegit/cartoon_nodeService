@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express()
-app.use(express.static('republic/uploads'));
+app.use(express.static('public/uploads'));
 var cors = require('cors')
 var userRouter = require('./routes/user.js');
 var bodyParser = require('body-parser');

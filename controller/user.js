@@ -69,7 +69,7 @@ var upload = (req,res)=>{
 }
 var getList = (req,res)=>{
     console.log('list--Params',req.query)
-    mysql.queryPromise('select * from information_schema.TABLES  where TABLE_NAME = "cartoonList" ').then(d=>{
+    mysql.queryPromise('select * from cartoonList').then(d=>{
         console.log('列表数据',d)
         res.json({
             code: 1,
@@ -80,7 +80,8 @@ var getList = (req,res)=>{
 var addList = (req,res)=>{
     // console.log('addParams',req.query)
     console.log('body',req.body)
-    mysql.queryPromise(`select * from  cartoonList where name = ${req.body.name}`).then(d=>{
+    mysql.queryPromise(`select * from  cartoonList where name ='${req.body.name}'`).then(d=>{
+        console.log('名称检测',d)
         if(d.length!==0){
             res.json({
                 code: 2,
@@ -91,9 +92,14 @@ var addList = (req,res)=>{
                 if(err) 
                     throw err
                 else {
-                    connenct.query('INSERT INTO cartoonList SET ?',{...req.body},function(error,result){
-                        if(error) 
+                    let sqlParams = {...req.body,createTime: (new Date()).valueOf()}
+                    console.log('sqlparams',sqlParams)
+                    connenct.query('INSERT INTO cartoonList SET ?', sqlParams,function(error,result) {
+                        if(error) {
                             throw error
+                            console.log('插入动漫数据error',error)
+                        }
+                            
                         else {
                             console.log('动漫数据插入成功',console.log(result))
                             res.json({code: 1,msg: '添加成功'})
